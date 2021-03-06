@@ -120,7 +120,11 @@ function main() {
             sleep(2000);
             upSwipe();
             if (lock_flag == 0) {
-                launch(now_app);
+                var i = 0;
+                do {
+                    launch(now_app);
+                    i++;
+                } while (currentPackage() != now_app && i < 5)
                 return;
             }
             downSwpie();
