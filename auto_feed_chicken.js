@@ -27,21 +27,10 @@ function enterMainPage() {
     for (var i = 0; i < 10; i++) {
         if (judgeMainPage())
             return true;
-        leftSwipe();
+        back();
+        sleep(1000);
     }
     return false;
-}
-
-function leftSwipe() {
-    setScreenMetrics(1440, 3200);
-    swipe(1400, 1600, 1000, 1600, 400);
-    sleep(500);
-}
-
-function downSwpie() {
-    setScreenMetrics(1440, 3200);
-    swipe(720, 50, 720, 550, 350);
-    sleep(500);
 }
 
 function upSwipe() {
@@ -118,7 +107,8 @@ function main() {
             sleep(2000);
             press(1250, 2950, 350);
             sleep(2000);
-            upSwipe();
+            home();
+            sleep(1000)
             if (lock_flag == 0) {
                 var i = 0;
                 do {
@@ -127,8 +117,8 @@ function main() {
                 } while (currentPackage() != now_app && i < 5)
                 return;
             }
-            downSwpie();
-            downSwpie();
+            quickSettings();
+            sleep(1000);
             desc('锁屏').findOnce().parent().click();
         }
     }
