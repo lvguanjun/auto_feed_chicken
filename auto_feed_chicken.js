@@ -33,12 +33,6 @@ function enterMainPage() {
     return false;
 }
 
-function upSwipe() {
-    setScreenMetrics(1440, 3200);
-    swipe(720, 3160, 720, 1100, 350);
-    sleep(500);
-}
-
 function enterManor() {
     var manor = text('蚂蚁庄园').findOnce();
     while (manor.parent()) {
@@ -85,7 +79,16 @@ function unlock() {
                 exit();
             }
         }
-        upSwipe();
+        var j = 0;
+        do {
+            j++;
+            swipe(720, 3100, 720, 1100, 350);
+            sleep(500);
+            if (j > 5) {
+                toastLog("解锁界面开启失败");
+                exit();
+            }
+        } while (!desc(1).findOnce())
         //输入屏幕解锁密码
         clickPasswd('123456');
         return true;
@@ -93,8 +96,8 @@ function unlock() {
     return false;
 }
 
-
 function main() {
+    setScreenMetrics(1440, 3200);
     var lock_flag = 0;
     if (unlock()) {
         lock_flag = 1;
@@ -114,6 +117,7 @@ function main() {
                 do {
                     launch(now_app);
                     i++;
+                    sleep(200);
                 } while (currentPackage() != now_app && i < 5)
                 return;
             }
@@ -124,5 +128,4 @@ function main() {
     }
 }
 
-setScreenMetrics(1440, 3200);
 main();
