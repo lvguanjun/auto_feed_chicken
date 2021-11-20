@@ -33,6 +33,7 @@ function clickPasswd(passwd) {
 
 function enterManor() {
     var i = 0;
+    home();
     while (app.getAppName(currentPackage()) != '支付宝') {
         launchApp('支付宝');
         i++;
@@ -46,10 +47,6 @@ function enterManor() {
         var i = 0;
         while (!judgeMainPage()) {
             back();
-            if (judgeManor()) {
-                return;
-            }
-            sleep(1000);
             i++;
             if (i > 10) {
                 toastLog('进入支付包首页失败');
@@ -60,7 +57,9 @@ function enterManor() {
         while (manor.parent()) {
             if (manor.parent().clickable()) {
                 manor.parent().click();
-                return;
+                if (judgeManor()) {
+                    return;
+                }
             }
             manor = manor.parent();
         }
@@ -74,6 +73,16 @@ function judgeManor() {
         console.log('第' + i + '次校验庄园');
         sleep(500);
         if (text('蚂蚁庄园').exists() && desc('更多').exists() && desc('关闭').exists()) {
+            // 通过判断两点颜色是否一致，确认已进入庄园而不是加载界面（加载界面为同色背景）
+            // 若20次（4秒）均判断两点颜色一致，强行认为进入蚂蚁庄园，方便后续还原环境处理
+            for (var j = 1; j <= 20; j++) {
+                if (!judgeScreenTwoPonitColorSame(300, 2700, 1000, 500)) {
+                    break
+                }
+                console.log('庄园加载界面共计' + j * 200 + '毫秒')
+                sleep(200)
+            }
+            console.log('成功进入庄园')
             return true;
         }
     }
@@ -85,6 +94,7 @@ function judgeMainPage() {
         sleep(300);
         console.log('第' + i + '次校验是否主页');
         if (text('扫一扫').exists() && text('付钱/收钱').exists() && text('出行').exists() && text('首页').exists()) {
+            console.log('进入主页成功')
             return true;
         }
         if (text('首页').exists() && text('理财').exists() && text('口碑').exists()) {
@@ -94,12 +104,32 @@ function judgeMainPage() {
     return false;
 }
 
+function judgeScreenTwoPonitColorSame(x1, y1, x2, y2) {
+    var img = captureScreen();
+    var color1 = images.pixel(img, x1, y1);
+    color1 = colors.toString(color1);
+    var color2 = images.pixel(img, x2, y2);
+    color2 = colors.toString(color2);
+    if (color1 == color2) {
+        console.log('color = ' + color1)
+        return true;
+    } else {
+        console.log('color1 = ' + color1)
+        console.log('color2 = ' + color2)
+        return false;
+    }
+}
+
 function main() {
     setScreenMetrics(1440, 3200);
     var passwd = '123456';
     let [lock_flag, current_app] = selfUnlock(passwd);
+    if(!requestScreenCapture()) {
+        toastLog('请求截图失败');
+        return;
+    }
     enterManor();
-    sleep(2000);
+    sleep(1000);
     press(1250, 2950, 350);
     sleep(2000);
     if (lock_flag) {
@@ -113,7 +143,7 @@ function main() {
             case '搜狗输入法':
             case '系统桌面':
                 home();
-                break;
+                return;
         }
         for (var i = 0; i < 5 && app.getAppName(currentPackage()) != current_app; i++) {
             launchApp(current_app);
