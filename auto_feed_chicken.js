@@ -38,7 +38,7 @@ function enterManor() {
         launchApp('支付宝');
         i++;
         sleep(500);
-        if (i > 5) {
+        if (i > 8) {
             toastLog('启动支付宝失败');
             exit();
         }
@@ -124,12 +124,17 @@ function main() {
     setScreenMetrics(1440, 3200);
     var passwd = '123456';
     let [lock_flag, current_app] = selfUnlock(passwd);
-    if(!requestScreenCapture()) {
-        toastLog('请求截图失败');
-        return;
+    sleep(1000);
+    for (var i = 0; i < 5; i++) {
+        if (!requestScreenCapture()) {
+            toastLog("截图请求失败" + i + "次");
+            sleep(500);
+        } else {
+            break;
+        }
     }
     enterManor();
-    sleep(1000);
+    sleep(2000);
     press(1250, 2950, 350);
     sleep(2000);
     if (lock_flag) {
@@ -153,3 +158,4 @@ function main() {
 }
 
 main();
+
