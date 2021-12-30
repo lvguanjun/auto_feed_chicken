@@ -93,11 +93,11 @@ function judgeMainPage() {
     for (var i = 1; i <= 3; i++) {
         sleep(300);
         console.log('第' + i + '次校验是否主页');
-        if (text('扫一扫').exists() && text('付钱/收钱').exists() && text('出行').exists() && text('首页').exists()) {
+        if (text('扫一扫').exists() && text('收付款').exists() && text('出行').exists() && text('首页').exists()) {
             console.log('进入主页成功')
             return true;
         }
-        if (text('首页').exists() && text('理财').exists() && text('口碑').exists()) {
+        if (text('首页').exists() && text('理财').exists() && text('生活').exists()) {
             id('com.alipay.android.phone.openplatform:id/tab_description').text('首页').findOnce().parent().click()
         }
     }
